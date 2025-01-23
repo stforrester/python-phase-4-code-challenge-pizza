@@ -68,7 +68,7 @@ def restaurant_by_id(id):
 
             response = make_response(
                 response_body,
-                200
+                204
             )
         else:
             response = make_response(
@@ -98,6 +98,23 @@ def restaurant_pizzas():
         response = make_response(
             restaurant_pizzas,
             200
+        )
+
+        return response
+    
+    elif request.method == 'POST':
+        new_restaurant_pizza = RestaurantPizza(
+            price=request.json.get("price"),
+            pizza_id=request.json.get("pizza_id"),
+            restaurant_id=request.json.get("restaurant_id"),
+        )
+        db.session.add(new_restaurant_pizza)
+        db.session.commit()
+        restaurant_pizza_dict = new_restaurant_pizza.to_dict("-pizza", "-restaurant",)
+
+        response = make_response(
+            restaurant_pizza_dict,
+            201
         )
 
         return response
