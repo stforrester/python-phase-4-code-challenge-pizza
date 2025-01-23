@@ -24,6 +24,38 @@ api = Api(app)
 def index():
     return "<h1>Code challenge</h1>"
 
+@app.route("/restaurants")
+def restaurants():
+
+    restaurants = [restaurant.to_dict(rules=("-restaurant_pizzas",)) for restaurant in Restaurant.query.all()]
+
+    response = make_response(
+        restaurants,
+        200
+    )
+
+    return response
+
+@app.route("/restaurants/<int:id>")
+def restaurant_by_id(id):
+    restaurant = Restaurant.query.filter(Restaurant.id == id).first()
+
+    restaurant_dict = restaurant.to_dict()
+
+    if restaurant:
+        response = make_response(
+            restaurant_dict,
+            200
+        )
+
+    else:
+        response = make_response(
+            {"error":"Restaurant not found"},
+            404
+        )
+    
+    return response
+    
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)
