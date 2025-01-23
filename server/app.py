@@ -24,7 +24,7 @@ api = Api(app)
 def index():
     return "<h1>Code challenge</h1>"
 
-@app.route("/restaurants")
+@app.route("/restaurants", methods=['GET'])
 def restaurants():
 
     restaurants = [restaurant.to_dict(rules=("-restaurant_pizzas",)) for restaurant in Restaurant.query.all()]
@@ -36,24 +36,47 @@ def restaurants():
 
     return response
 
-@app.route("/restaurants/<int:id>")
+@app.route("/restaurants/<int:id>", methods=['GET', 'DELETE'])
 def restaurant_by_id(id):
     restaurant = Restaurant.query.filter(Restaurant.id == id).first()
 
-    if restaurant:
-        restaurant_dict = restaurant.to_dict()
-        response = make_response(
-            restaurant_dict,
-            200
-        )
+    if request.method == 'GET':
+        if restaurant:
+            restaurant_dict = restaurant.to_dict()
+            response = make_response(
+                restaurant_dict,
+                200
+            )
 
-    else:
-        response = make_response(
-            {"error":"Restaurant not found"},
-            404
-        )
+        else:
+            response = make_response(
+                {"error":"Restaurant not found"},
+                404
+            )
+        
+        return response
     
-    return response
+    elif request.method == 'DELETE':
+        if restaurant:
+            db.session.delete(restaurant)
+            db.session.commit()
+
+            response_body = {
+                "delete_successful": True,
+                "message": "Restaurant deleted."
+            }
+
+            response = make_response(
+                response_body,
+                200
+            )
+        else:
+            response = make_response(
+                {"error":"Restaurant not found"},
+                404
+            )
+        
+        return response
     
 
 if __name__ == "__main__":
