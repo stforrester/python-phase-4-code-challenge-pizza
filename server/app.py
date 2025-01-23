@@ -26,15 +26,15 @@ def index():
 
 @app.route("/restaurants", methods=['GET'])
 def restaurants():
-
     restaurants = [restaurant.to_dict(rules=("-restaurant_pizzas",)) for restaurant in Restaurant.query.all()]
+    
+    if request.method == 'GET':
+        response = make_response(
+            restaurants,
+            200
+        )
 
-    response = make_response(
-        restaurants,
-        200
-    )
-
-    return response
+        return response
 
 @app.route("/restaurants/<int:id>", methods=['GET', 'DELETE'])
 def restaurant_by_id(id):
@@ -77,6 +77,31 @@ def restaurant_by_id(id):
             )
         
         return response
+
+@app.route("/pizzas", methods=['GET'])
+def pizzas():
+    pizzas = [pizza.to_dict(rules=("-restaurant_pizzas",)) for pizza in Pizza.query.all()]
+
+    if request.method == 'GET':
+        response = make_response(
+            pizzas,
+            200
+        )
+
+        return response
+
+@app.route("/restaurant_pizzas", methods=['GET', 'POST'])
+def restaurant_pizzas():
+    restaurant_pizzas = [restaurant_pizza.to_dict() for restaurant_pizza in RestaurantPizza.query.all()]
+
+    if request.method == 'GET':
+        response = make_response(
+            restaurant_pizzas,
+            200
+        )
+
+        return response
+    
     
 
 if __name__ == "__main__":
