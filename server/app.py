@@ -40,9 +40,8 @@ def restaurants():
 def restaurant_by_id(id):
     restaurant = Restaurant.query.filter(Restaurant.id == id).first()
 
-    restaurant_dict = restaurant.to_dict()
-
     if restaurant:
+        restaurant_dict = restaurant.to_dict()
         response = make_response(
             restaurant_dict,
             200
